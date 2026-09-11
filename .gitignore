@@ -1,0 +1,17 @@
+# Exclude Conductor Portal as requested
+conductor_portal/
+
+# Environment and sensitive configuration
+.env
+*.env.txt
+
+# Python bytecode & caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Local database and log files
+*.db
+*.log
+scratch/
+.system_generated/
