@@ -1,4 +1,5 @@
 import math
+import socket
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import secrets
@@ -8,6 +9,14 @@ from flask_cors import CORS
 from flask import Flask, jsonify, request, render_template, session, Response
 from dotenv import load_dotenv
 load_dotenv()
+
+# Force IPv4 connections (fixes Render/Supabase IPv6 unreachable issue)
+_original_getaddrinfo = socket.getaddrinfo
+def _forced_ipv4_getaddrinfo(*args, **kwargs):
+    responses = _original_getaddrinfo(*args, **kwargs)
+    ipv4 = [r for r in responses if r[0] == socket.AF_INET]
+    return ipv4 if ipv4 else responses
+socket.getaddrinfo = _forced_ipv4_getaddrinfo
 
 try:
     import psycopg2
