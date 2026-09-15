@@ -1643,18 +1643,18 @@
                                         <div class="lbl">Active Buses</div>
                                     </div>
                                 </div>
-                                <div class="metric-card" style="border-left-color: var(--warning);">
-                                    <div class="metric-icon" style="color: #d97706; background: rgba(255, 209, 102, 0.2);"><i class="fas fa-tools"></i></div>
+                                <div class="metric-card" style="border-left-color: #ec4899;">
+                                    <div class="metric-icon" style="color: #ec4899; background: rgba(236, 72, 153, 0.12);"><i class="fas fa-ticket-alt"></i></div>
                                     <div class="metric-info">
-                                        <div class="val" id="stat-maintenance-buses">0</div>
-                                        <div class="lbl">Maintenance Buses</div>
+                                        <div class="val" id="stat-total-tickets">0</div>
+                                        <div class="lbl">Total Tickets Booked</div>
                                     </div>
                                 </div>
-                                <div class="metric-card" style="border-left-color: var(--danger);">
-                                    <div class="metric-icon" style="color: var(--danger); background: rgba(239, 71, 111, 0.12);"><i class="fas fa-clock"></i></div>
+                                <div class="metric-card" style="border-left-color: #10b981;">
+                                    <div class="metric-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.12);"><i class="fas fa-indian-rupee-sign"></i></div>
                                     <div class="metric-info">
-                                        <div class="val" id="stat-delayed-buses">0</div>
-                                        <div class="lbl">Delayed Buses</div>
+                                        <div class="val" id="stat-total-revenue" style="color:#10b981; font-weight:800;">₹0.00</div>
+                                        <div class="lbl">Total Revenue (மொத்த வருவாய்)</div>
                                     </div>
                                 </div>
                                 <div class="metric-card" style="border-left-color: var(--info);">
@@ -1685,6 +1685,35 @@
                                         <button class="btn btn-secondary" onclick="openAddRouteModal()"><i class="fas fa-plus-circle"></i> Create New Bus Route</button>
                                         <button class="btn btn-warning" onclick="openAddAlertModal()"><i class="fas fa-bullhorn"></i> Post Broadcast Alert</button>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Ticket Bookings & Revenue Section -->
+                            <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-top: 20px;">
+                                <div style="display:flex; justify-space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                                    <div>
+                                        <h3 style="font-size: 1.05rem; margin:0;"><i class="fas fa-receipt" style="color:#ec4899;"></i> Live Recent Ticket Bookings / சமீபத்திய டிக்கெட் பதிவுகள்</h3>
+                                        <span style="font-size:0.8rem; color:var(--text-muted);">Real-time tickets booked by passengers</span>
+                                    </div>
+                                    <button class="btn btn-small" onclick="switchAdminTab('reports')" style="background:#8b5cf6; color:white;"><i class="fas fa-file-invoice-dollar"></i> View Detailed Sales Report</button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ticket ID</th>
+                                                <th>Passenger Name</th>
+                                                <th>Phone</th>
+                                                <th>From ➔ To</th>
+                                                <th>Seats</th>
+                                                <th>Fare Paid (₹)</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dashboard-recent-tickets-tbody">
+                                            <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Loading recent ticket bookings...</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -2796,12 +2825,32 @@
                 const res = await authFetch('/api/admin/dashboard_stats');
                 const stats = await res.json();
 
-                document.getElementById('stat-total-buses').textContent = stats.total_buses || 0;
-                document.getElementById('stat-active-buses').textContent = stats.active_buses || 0;
-                document.getElementById('stat-maintenance-buses').textContent = stats.maintenance_buses || 0;
-                document.getElementById('stat-delayed-buses').textContent = stats.delayed_buses || 0;
-                document.getElementById('stat-total-routes').textContent = stats.total_routes || 0;
-                document.getElementById('stat-avg-occupancy').textContent = (stats.avg_occupancy || 0) + '%';
+                if (document.getElementById('stat-total-buses')) document.getElementById('stat-total-buses').textContent = stats.total_buses || 0;
+                if (document.getElementById('stat-active-buses')) document.getElementById('stat-active-buses').textContent = stats.active_buses || 0;
+                if (document.getElementById('stat-total-routes')) document.getElementById('stat-total-routes').textContent = stats.total_routes || 0;
+                if (document.getElementById('stat-avg-occupancy')) document.getElementById('stat-avg-occupancy').textContent = (stats.avg_occupancy || 0) + '%';
+                if (document.getElementById('stat-total-tickets')) document.getElementById('stat-total-tickets').textContent = stats.total_tickets || 0;
+                if (document.getElementById('stat-total-revenue')) document.getElementById('stat-total-revenue').textContent = '₹' + (stats.total_revenue || 0).toFixed(2);
+
+                const dashTbody = document.getElementById('dashboard-recent-tickets-tbody');
+                if (dashTbody) {
+                    const recent = stats.recent_tickets || [];
+                    if (!recent.length) {
+                        dashTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:15px;">No passenger ticket bookings yet.</td></tr>`;
+                    } else {
+                        dashTbody.innerHTML = recent.map(t => `
+                            <tr>
+                                <td><strong style="font-size:0.8rem; color:var(--primary);">${t.ticket_id}</strong></td>
+                                <td><strong>${t.passenger_name || 'Commuter'}</strong></td>
+                                <td>${t.passenger_phone || '-'}</td>
+                                <td>${t.from_stop} ➔ ${t.to_stop}</td>
+                                <td><span class="badge" style="background:#e2e8f0; color:#334155;">${t.seats} Seats</span></td>
+                                <td><strong style="color:var(--success); font-size:0.95rem;">₹${parseFloat(t.fare_paid || 0).toFixed(2)}</strong></td>
+                                <td><span class="badge badge-active">${t.status || 'Valid'}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                }
 
                 renderFleetOverviewChart(stats);
             } catch (e) {

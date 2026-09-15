@@ -1087,13 +1087,15 @@ def search_bus():
             JOIN route ON CAST(bus.route_id AS TEXT) = CAST(route.route_id AS TEXT)
             LEFT JOIN bus_stop s1 ON CAST(bus.route_id AS TEXT) = CAST(s1.route_id AS TEXT) AND (LOWER(s1.stop_name) = %s OR LOWER(s1.stop_name) = %s OR LOWER(s1.stop_name) LIKE %s)
             LEFT JOIN bus_stop s2 ON CAST(bus.route_id AS TEXT) = CAST(s2.route_id AS TEXT) AND (LOWER(s2.stop_name) = %s OR LOWER(s2.stop_name) = %s OR LOWER(s2.stop_name) LIKE %s)
-            WHERE (s1.stop_order < s2.stop_order) 
+            WHERE (s1.stop_name IS NOT NULL AND s2.stop_name IS NOT NULL AND LOWER(s1.stop_name) != LOWER(s2.stop_name)) 
+               OR (LOWER(route.origin) IN (%s, %s) AND LOWER(route.destination) IN (%s, %s))
                OR (LOWER(route.origin) IN (%s, %s) AND LOWER(route.destination) IN (%s, %s))
         """
         orig_like = f"%{query_origin_eng}%"
         dest_like = f"%{query_dest_eng}%"
         params = (query_origin_eng, query_origin_raw, orig_like, query_dest_eng, query_dest_raw,
-                  dest_like, query_origin_eng, query_origin_raw, query_dest_eng, query_dest_raw)
+                  dest_like, query_origin_eng, query_origin_raw, query_dest_eng, query_dest_raw,
+                  query_dest_eng, query_dest_raw, query_origin_eng, query_origin_raw)
         rows = execute_query(sql, params=params, fetchall=True)
 
         result = []
@@ -1152,7 +1154,7 @@ def get_destinations():
             SELECT DISTINCT s2.stop_name
             FROM bus_stop s1
             JOIN bus_stop s2 ON s1.route_id = s2.route_id
-            WHERE (LOWER(s1.stop_name) = %s OR LOWER(s1.stop_name) = %s) AND s1.stop_order < s2.stop_order
+            WHERE (LOWER(s1.stop_name) = %s OR LOWER(s1.stop_name) = %s) AND LOWER(s1.stop_name) != LOWER(s2.stop_name)
         """
         rows = execute_query(sql, params=(
             origin_eng, origin_query), fetchall=True)
@@ -1598,6 +1600,15 @@ def admin_dashboard_stats():
     avg_occupancy = round((total_occ / total_cap * 100),
                           1) if total_cap > 0 else 0
 
+    # Ticket & Revenue Stats for Admin Dashboard
+    t_row = execute_query("SELECT COUNT(*) as c FROM ticket", fetchone=True) or {}
+    total_tickets = list(t_row.values())[0] if t_row else 0
+
+    r_row = execute_query("SELECT COALESCE(SUM(fare_paid), 0.0) as sum FROM ticket", fetchone=True) or {}
+    total_revenue = list(r_row.values())[0] if r_row else 0.0
+
+    recent_tickets = execute_query("SELECT * FROM ticket ORDER BY created_at DESC LIMIT 10", fetchall=True) or []
+
     return jsonify({
         "total_buses": total_buses,
         "active_buses": active_buses,
@@ -1609,7 +1620,10 @@ def admin_dashboard_stats():
         "active_trips": active_buses + delayed_buses,
         "total_alerts": total_alerts,
         "avg_occupancy": avg_occupancy,
-        "avg_eta": 15
+        "avg_eta": 15,
+        "total_tickets": total_tickets,
+        "total_revenue": round(float(total_revenue or 0.0), 2),
+        "recent_tickets": recent_tickets
     })
 
 
