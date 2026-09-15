@@ -678,6 +678,61 @@
             .admin-layout {
                 grid-template-columns: 1fr;
             }
+            .sidebar-menu {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 8px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .sidebar-link {
+                white-space: nowrap;
+                padding: 8px 14px;
+                font-size: 0.82rem;
+            }
+        }
+
+        @media(max-width: 768px) {
+            .navbar .container {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 15px;
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .nav-links a {
+                padding: 8px 10px;
+                font-size: 0.82rem;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .modal-body {
+                width: 95% !important;
+                padding: 16px !important;
+                max-height: 88vh;
+                overflow-y: auto;
+            }
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+            }
+            .data-table th, .data-table td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media(max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .admin-sidebar {
