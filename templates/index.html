@@ -4892,10 +4892,8 @@
                             </td>
                             <td style="font-size:0.88rem;">${t.from_stop} <i class="fas fa-arrow-right" style="font-size:0.75rem; color:var(--primary);"></i> ${t.to_stop}</td>
                             <td><span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700;">${t.seats}</span></td>
-                            <td><strong style="color:var(--success); font-size:0.95rem;">₹${parseFloat(t.fare_paid || 0).toFixed(2)}</strong></td>
-                            <td><span class="badge ${isPass ? 'badge-active' : ''}" style="${isPass ? 'background:#8b5cf6; color:white;' : 'background:#e2e8f0; color:#334155;'}">${t.promo_code || 'Standard'}</span></td>
-                            <td><span class="badge badge-active">${t.status || 'Valid'}</span></td>
                         </tr>
+                    `;
                 }).join('');
             }
         }
