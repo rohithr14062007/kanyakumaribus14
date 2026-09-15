@@ -563,7 +563,7 @@ def init_db():
             admin_count = cur.fetchone()['count']
 
         if admin_count == 0:
-            default_pass_hash = generate_password_hash("admin123")
+            default_pass_hash = generate_password_hash("admin@1406")
             if db_type == 'sqlite':
                 cur.execute("INSERT INTO admin_user (username, password_hash, email) VALUES (?, ?, ?)",
                             ("admin", default_pass_hash, "admin@smartbus.org"))
@@ -571,7 +571,13 @@ def init_db():
                 cur.execute("INSERT INTO admin_user (username, password_hash, email) VALUES (%s, %s, %s)",
                             ("admin", default_pass_hash, "admin@smartbus.org"))
             con.commit()
-            print("Default admin user created: admin / admin123")
+            print("Default admin user created: admin / admin@1406")
+        else:
+            # Update existing admin password to admin@1406
+            new_hash = generate_password_hash("admin@1406")
+            cur.execute("UPDATE admin_user SET password_hash = %s WHERE username = %s", (new_hash, "admin"))
+            con.commit()
+            print("Admin password updated to admin@1406")
 
         # Seed Default Conductor
         try:
