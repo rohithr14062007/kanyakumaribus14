@@ -2354,10 +2354,10 @@ def book_ticket():
 def get_my_tickets():
     phone = request.args.get("phone", "").strip()
     if phone:
-        sql = "SELECT t.*, b.bus_number, b.bus_type FROM ticket t LEFT JOIN bus b ON t.bus_id = b.bus_id WHERE t.passenger_phone = %s ORDER BY t.booked_at DESC"
+        sql = "SELECT t.*, b.bus_number, b.bus_type FROM ticket t LEFT JOIN bus b ON t.bus_id = b.bus_id WHERE t.passenger_phone = %s ORDER BY t.created_at DESC"
         rows = execute_query(sql, params=(phone,), fetchall=True)
     else:
-        sql = "SELECT t.*, b.bus_number, b.bus_type FROM ticket t LEFT JOIN bus b ON t.bus_id = b.bus_id ORDER BY t.booked_at DESC LIMIT 20"
+        sql = "SELECT t.*, b.bus_number, b.bus_type FROM ticket t LEFT JOIN bus b ON t.bus_id = b.bus_id ORDER BY t.created_at DESC LIMIT 20"
         rows = execute_query(sql, fetchall=True)
     return jsonify(rows or [])
 
