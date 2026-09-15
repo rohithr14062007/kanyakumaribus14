@@ -1647,18 +1647,18 @@
                                         <div class="lbl">Active Buses</div>
                                     </div>
                                 </div>
-                                <div class="metric-card" style="border-left-color: #ec4899;">
-                                    <div class="metric-icon" style="color: #ec4899; background: rgba(236, 72, 153, 0.12);"><i class="fas fa-ticket-alt"></i></div>
+                                <div class="metric-card" style="border-left-color: var(--warning);">
+                                    <div class="metric-icon" style="color: #d97706; background: rgba(255, 209, 102, 0.2);"><i class="fas fa-tools"></i></div>
                                     <div class="metric-info">
-                                        <div class="val" id="stat-total-tickets">0</div>
-                                        <div class="lbl">Total Tickets Booked</div>
+                                        <div class="val" id="stat-maintenance-buses">0</div>
+                                        <div class="lbl">Maintenance Buses</div>
                                     </div>
                                 </div>
-                                <div class="metric-card" style="border-left-color: #10b981;">
-                                    <div class="metric-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.12);"><i class="fas fa-indian-rupee-sign"></i></div>
+                                <div class="metric-card" style="border-left-color: var(--danger);">
+                                    <div class="metric-icon" style="color: var(--danger); background: rgba(239, 71, 111, 0.12);"><i class="fas fa-clock"></i></div>
                                     <div class="metric-info">
-                                        <div class="val" id="stat-total-revenue" style="color:#10b981; font-weight:800;">₹0.00</div>
-                                        <div class="lbl">Total Revenue (மொத்த வருவாய்)</div>
+                                        <div class="val" id="stat-delayed-buses">0</div>
+                                        <div class="lbl">Delayed Buses</div>
                                     </div>
                                 </div>
                                 <div class="metric-card" style="border-left-color: var(--info);">
@@ -1688,39 +1688,8 @@
                                         <button class="btn btn-primary" onclick="openAddBusModal()"><i class="fas fa-plus"></i> Add New Bus to Fleet</button>
                                         <button class="btn btn-secondary" onclick="openAddRouteModal()"><i class="fas fa-plus-circle"></i> Create New Bus Route</button>
                                         <button class="btn btn-warning" onclick="openAddAlertModal()"><i class="fas fa-bullhorn"></i> Post Broadcast Alert</button>
+                                        <button class="btn" style="background:#8b5cf6; color:white;" onclick="switchAdminTab('reports')"><i class="fas fa-file-invoice-dollar"></i> Open Sales & Financial Reports</button>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Live Ticket Bookings & Revenue Section -->
-                            <div style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-top: 20px;">
-                                <div style="display:flex; justify-space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                                    <div>
-                                        <h3 style="font-size: 1.05rem; margin:0;"><i class="fas fa-receipt" style="color:#ec4899;"></i> Live Recent Ticket Bookings / சமீபத்திய டிக்கெட் பதிவுகள்</h3>
-                                        <span style="font-size:0.8rem; color:var(--text-muted);">Real-time tickets booked by passengers</span>
-                                    </div>
-                                    <div style="display:flex; gap:8px;">
-                                        <button class="btn btn-small" onclick="loadAdminDashboard()" style="background:#0284c7; color:white;"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
-                                        <button class="btn btn-small" onclick="switchAdminTab('reports')" style="background:#8b5cf6; color:white;"><i class="fas fa-file-invoice-dollar"></i> View Detailed Sales Report</button>
-                                    </div>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Ticket ID</th>
-                                                <th>Passenger Name</th>
-                                                <th>Phone</th>
-                                                <th>From ➔ To</th>
-                                                <th>Seats</th>
-                                                <th>Fare Paid (₹)</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="dashboard-recent-tickets-tbody">
-                                            <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Loading recent ticket bookings...</td></tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -1986,69 +1955,101 @@
                     <!-- TAB 8: FINANCIAL & SALES REPORTS -->
                     <div id="admin-tab-reports" class="admin-tab-content" style="display: none;">
                         <div class="card">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                            <div style="display:flex; justify-space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
                                 <div>
-                                    <h2><i class="fas fa-file-invoice-dollar" style="color:var(--success);"></i> Financial & Sales Analytics Reports</h2>
-                                    <p style="color:var(--text-muted); margin:0; font-size:0.9rem;">Real-time revenue collections, route-wise sales breakdown & CSV export</p>
+                                    <h2><i class="fas fa-file-invoice-dollar" style="color:var(--success);"></i> Live Sales & Financial Analytics / நிதி & நேரடி விற்பனை அறிக்கைகள்</h2>
+                                    <p style="color:var(--text-muted); margin:0; font-size:0.9rem;">Real-time passenger bookings, revenue collections, route breakdown & CSV export</p>
                                 </div>
-                                <div style="display:flex; gap:10px;">
-                                    <a href="/api/admin/reports/export_csv" target="_blank" class="btn" style="background:#059669; color:white;"><i class="fas fa-file-csv"></i> Export Sales CSV</a>
-                                    <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print Financial Summary</button>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button class="btn" onclick="loadAdminSalesReport()" style="background:#0284c7; color:white;"><i class="fas fa-sync-alt"></i> Refresh Live Sales</button>
+                                    <a href="/api/admin/reports/export_csv" target="_blank" class="btn" style="background:#059669; color:white;"><i class="fas fa-file-csv"></i> Export Official CSV</a>
+                                    <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
                                 </div>
                             </div>
 
-                            <!-- Sales Metrics Summary Grid -->
+                            <!-- Sales Metrics Summary Grid (4 KPI Cards) -->
                             <div class="metrics-grid">
                                 <div class="metric-card" style="border-left-color: var(--success);">
                                     <div class="metric-icon" style="color:var(--success); background:rgba(6,214,160,0.12);"><i class="fas fa-indian-rupee-sign"></i></div>
                                     <div class="metric-info">
-                                        <div class="val" id="report-stat-revenue">₹0.00</div>
-                                        <div class="lbl">Total Revenue Collected</div>
+                                        <div class="val" id="report-stat-revenue" style="color:var(--success); font-weight:800;">₹0.00</div>
+                                        <div class="lbl">Total Revenue Collected (மொத்த வருவாய்)</div>
                                     </div>
                                 </div>
                                 <div class="metric-card" style="border-left-color: var(--primary);">
                                     <div class="metric-icon" style="color:var(--primary); background:rgba(46,139,87,0.12);"><i class="fas fa-ticket-alt"></i></div>
                                     <div class="metric-info">
                                         <div class="val" id="report-stat-tickets">0</div>
-                                        <div class="lbl">Total Tickets Sold</div>
+                                        <div class="lbl">Total Tickets Issued</div>
+                                    </div>
+                                </div>
+                                <div class="metric-card" style="border-left-color: #8b5cf6;">
+                                    <div class="metric-icon" style="color:#8b5cf6; background:rgba(139,92,246,0.12);"><i class="fas fa-calculator"></i></div>
+                                    <div class="metric-info">
+                                        <div class="val" id="report-stat-avg-fare">₹0.00</div>
+                                        <div class="lbl">Average Ticket Fare</div>
+                                    </div>
+                                </div>
+                                <div class="metric-card" style="border-left-color: #f59e0b;">
+                                    <div class="metric-icon" style="color:#f59e0b; background:rgba(245,158,11,0.12);"><i class="fas fa-route"></i></div>
+                                    <div class="metric-info">
+                                        <div class="val" id="report-stat-routes-count">0</div>
+                                        <div class="lbl">Active Revenue Routes</div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Live Ticket Transactions Section -->
+                            <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:20px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
+                                    <h3 style="font-size:1.15rem; margin:0; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+                                        <i class="fas fa-receipt" style="color:var(--primary);"></i> Passenger Ticket Sales Register
+                                    </h3>
+                                    <div style="display:flex; gap:10px; flex-wrap:wrap; flex:1; max-width:550px; justify-content:flex-end;">
+                                        <input type="text" id="report-ticket-search" placeholder="Search by Ticket ID, Passenger, Phone, Route..." oninput="filterAdminSalesTickets()" style="flex:1; min-width:220px; padding:8px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.9rem;">
+                                        <select id="report-status-filter" onchange="filterAdminSalesTickets()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border); font-weight:600; font-size:0.9rem;">
+                                            <option value="ALL">All Categories</option>
+                                            <option value="Valid">Valid Tickets Only</option>
+                                            <option value="PASS">Passes Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ticket ID</th>
+                                                <th>Booking Date / Time</th>
+                                                <th>Route</th>
+                                                <th>Passenger Name & Contact</th>
+                                                <th>From ➔ To</th>
+                                                <th>Seats</th>
+                                                <th>Fare Paid (₹)</th>
+                                                <th>Promo / Type</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-reports-recent-tbody">
+                                            <!-- Rendered via JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                             <!-- Route Revenue Breakdown Table -->
-                            <h3 style="font-size:1.1rem; margin:25px 0 12px; color:var(--text-main);"><i class="fas fa-chart-bar" style="color:var(--primary);"></i> Revenue Breakdown by Route</h3>
-                            <div class="table-responsive" style="margin-bottom:30px;">
+                            <h3 style="font-size:1.1rem; margin:30px 0 12px; color:var(--text-main);"><i class="fas fa-chart-bar" style="color:var(--primary);"></i> Route-Wise Revenue Breakdown</h3>
+                            <div class="table-responsive" style="margin-bottom:10px;">
                                 <table class="data-table">
                                     <thead>
                                         <tr>
                                             <th>Route ID</th>
                                             <th>Tickets Issued</th>
-                                            <th>Total Revenue (₹)</th>
+                                            <th>Total Revenue Generated (₹)</th>
+                                            <th>Revenue Share</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-reports-routes-tbody">
-                                        <!-- Rendered via JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Recent Transactions Table -->
-                            <h3 style="font-size:1.1rem; margin:25px 0 12px; color:var(--text-main);"><i class="fas fa-list-ol" style="color:var(--info);"></i> Recent Ticket Sales Transactions</h3>
-                            <div class="table-responsive">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Ticket ID</th>
-                                            <th>Route</th>
-                                            <th>Passenger</th>
-                                            <th>From ➔ To</th>
-                                            <th>Seats</th>
-                                            <th>Fare (₹)</th>
-                                            <th>Type / Promo</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="admin-reports-recent-tbody">
                                         <!-- Rendered via JS -->
                                     </tbody>
                                 </table>
@@ -4725,56 +4726,114 @@
             }
         }
 
+        let allSalesReportTickets = [];
+        let totalSalesReportRevenue = 0.0;
+
         async function loadAdminSalesReport() {
             try {
                 const res = await authFetch('/api/admin/reports/sales');
                 const data = await res.json();
 
+                totalSalesReportRevenue = parseFloat(data.total_revenue_collected || 0.0);
+                const totalTickets = data.total_tickets_issued || 0;
+                allSalesReportTickets = data.recent_tickets || [];
+                const routeBreakdown = data.route_breakdown || [];
+
+                const avgFare = totalTickets > 0 ? (totalSalesReportRevenue / totalTickets) : 0.0;
+
                 if (document.getElementById('report-stat-revenue')) {
-                    document.getElementById('report-stat-revenue').textContent = `₹${(data.total_revenue_collected || 0).toFixed(2)}`;
+                    document.getElementById('report-stat-revenue').textContent = `₹${totalSalesReportRevenue.toFixed(2)}`;
                 }
                 if (document.getElementById('report-stat-tickets')) {
-                    document.getElementById('report-stat-tickets').textContent = data.total_tickets_issued || 0;
+                    document.getElementById('report-stat-tickets').textContent = totalTickets;
+                }
+                if (document.getElementById('report-stat-avg-fare')) {
+                    document.getElementById('report-stat-avg-fare').textContent = `₹${avgFare.toFixed(2)}`;
+                }
+                if (document.getElementById('report-stat-routes-count')) {
+                    document.getElementById('report-stat-routes-count').textContent = routeBreakdown.length;
                 }
 
+                // Render Route Breakdown Table
                 const routeTbody = document.getElementById('admin-reports-routes-tbody');
                 if (routeTbody) {
-                    const routesList = data.route_breakdown || [];
-                    if (!routesList.length) {
-                        routeTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No sales data available.</td></tr>`;
+                    if (!routeBreakdown.length) {
+                        routeTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">No route sales data available.</td></tr>`;
                     } else {
-                        routeTbody.innerHTML = routesList.map(r => `
-                            <tr>
-                                <td><strong style="color:var(--primary);">${r.route_id || 'All Routes'}</strong></td>
-                                <td>${r.count || 0} Tickets</td>
-                                <td><strong style="color:var(--success);">₹${parseFloat(r.total_fare || 0).toFixed(2)}</strong></td>
-                            </tr>
-                        `).join('');
+                        routeTbody.innerHTML = routeBreakdown.map(r => {
+                            const rFare = parseFloat(r.total_fare || 0);
+                            const rPct = totalSalesReportRevenue > 0 ? ((rFare / totalSalesReportRevenue) * 100).toFixed(1) : 0;
+                            return `
+                                <tr>
+                                    <td><strong style="color:var(--primary);">${r.route_id || 'All Routes'}</strong></td>
+                                    <td><span class="badge" style="background:#e2e8f0; color:#334155;">${r.count || 0} Tickets</span></td>
+                                    <td><strong style="color:var(--success); font-size:0.95rem;">₹${rFare.toFixed(2)}</strong></td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <div style="flex:1; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;">
+                                                <div style="width:${rPct}%; background:var(--success); height:100%;"></div>
+                                            </div>
+                                            <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">${rPct}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
                     }
                 }
 
-                const recentTbody = document.getElementById('admin-reports-recent-tbody');
-                if (recentTbody) {
-                    const recentList = data.recent_tickets || [];
-                    if (!recentList.length) {
-                        recentTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No recent transactions found.</td></tr>`;
-                    } else {
-                        recentTbody.innerHTML = recentList.map(t => `
-                            <tr>
-                                <td><strong style="font-size:0.8rem;">${t.ticket_id}</strong></td>
-                                <td>${t.route_id}</td>
-                                <td>${t.passenger_name || 'Passenger'}</td>
-                                <td>${t.from_stop} ➔ ${t.to_stop}</td>
-                                <td>${t.seats}</td>
-                                <td><strong style="color:var(--success);">₹${parseFloat(t.fare_paid || 0).toFixed(2)}</strong></td>
-                                <td><span class="badge badge-active">${t.promo_code || 'Standard'}</span></td>
-                                <td><span class="badge badge-active">${t.status || 'Valid'}</span></td>
-                            </tr>
-                        `).join('');
-                    }
-                }
+                filterAdminSalesTickets();
             } catch (e) {
                 console.error("Sales report error:", e);
+            }
+        }
+
+        function filterAdminSalesTickets() {
+            const searchInput = document.getElementById('report-ticket-search');
+            const search = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            const statusFilter = document.getElementById('report-status-filter')?.value || 'ALL';
+            const recentTbody = document.getElementById('admin-reports-recent-tbody');
+            if (!recentTbody) return;
+
+            let filtered = allSalesReportTickets.filter(t => {
+                const matchSearch = !search ||
+                    (t.ticket_id || '').toLowerCase().includes(search) ||
+                    (t.passenger_name || '').toLowerCase().includes(search) ||
+                    (t.passenger_phone || '').toLowerCase().includes(search) ||
+                    (t.route_id || '').toLowerCase().includes(search) ||
+                    (t.from_stop || '').toLowerCase().includes(search) ||
+                    (t.to_stop || '').toLowerCase().includes(search);
+
+                let matchStatus = true;
+                if (statusFilter === 'Valid') matchStatus = (t.status === 'Valid');
+                if (statusFilter === 'PASS') matchStatus = (t.promo_code === 'BUS_PASS' || (t.status || '').includes('Pass'));
+
+                return matchSearch && matchStatus;
+            });
+
+            if (!filtered.length) {
+                recentTbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:20px;">No ticket records match your filter criteria.</td></tr>`;
+            } else {
+                recentTbody.innerHTML = filtered.map(t => {
+                    const dateStr = t.created_at ? new Date(t.created_at).toLocaleString() : 'N/A';
+                    const isPass = t.promo_code === 'BUS_PASS' || (t.status || '').includes('Pass');
+                    return `
+                        <tr>
+                            <td><strong style="font-size:0.82rem; color:var(--primary); font-family:monospace;">${t.ticket_id}</strong></td>
+                            <td style="font-size:0.8rem; color:var(--text-muted);">${dateStr}</td>
+                            <td><strong style="color:var(--text-main);">${t.route_id}</strong></td>
+                            <td>
+                                <div><strong>${t.passenger_name || 'Commuter'}</strong></div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">${t.passenger_phone || 'No phone'}</div>
+                            </td>
+                            <td style="font-size:0.88rem;">${t.from_stop} <i class="fas fa-arrow-right" style="font-size:0.75rem; color:var(--primary);"></i> ${t.to_stop}</td>
+                            <td><span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700;">${t.seats}</span></td>
+                            <td><strong style="color:var(--success); font-size:0.95rem;">₹${parseFloat(t.fare_paid || 0).toFixed(2)}</strong></td>
+                            <td><span class="badge ${isPass ? 'badge-active' : ''}" style="${isPass ? 'background:#8b5cf6; color:white;' : 'background:#e2e8f0; color:#334155;'}">${t.promo_code || 'Standard'}</span></td>
+                            <td><span class="badge badge-active">${t.status || 'Valid'}</span></td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
     </script>
