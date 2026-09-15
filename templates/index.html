@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TNSTC Tirunelveli - Kanyakumari District Division</title>
+    <!-- PWA Web App Manifest & App Installation Meta Tags -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#1b4332">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    
     <!-- Modern Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Leaflet mapping library CSS -->
@@ -1117,6 +1125,7 @@
             <a href="#" id="nav-busstand" onclick="navigate('busstand')"><i class="fas fa-tv" style="color:#06d6a0;"></i> <span>Bus Stand Board</span></a>
             <a href="#" id="nav-passes" onclick="navigate('passes')"><i class="fas fa-id-card" style="color:#e0aaff;"></i> <span>Travel Pass</span></a>
             <a href="#" id="nav-feedback" onclick="navigate('feedback')"><i class="fas fa-comment-dots"></i> <span id="lbl-nav-feedback">Feedback</span></a>
+            <a href="javascript:void(0)" id="pwa-install-btn" onclick="installPWAApp()" class="btn-nav" style="background:#0284c7; color:white !important; font-weight:700;"><i class="fas fa-mobile-screen-button"></i> Install App</a>
             <a href="#" id="nav-login" onclick="navigate('login')" class="btn-nav">Login</a>
             <a href="javascript:void(0)" id="nav-signup" onclick="navigate('login'); switchLoginRoleTab('signup');" class="btn-nav" style="background:var(--primary); color:white !important; font-weight:700;"><i class="fas fa-user-plus"></i> Sign Up</a>
             <a href="#" id="nav-admin" onclick="navigate('admin')" style="display:none; color:white; font-weight:600;"><i class="fas fa-user-shield"></i> Admin Panel</a>
@@ -4889,6 +4898,36 @@
                         </tr>
                     `;
                 }).join('');
+        // --------------------------------------------------
+        // PWA SERVICE WORKER & APP INSTALLATION HANDLER
+        // --------------------------------------------------
+        let deferredPWAInstallPrompt = null;
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPWAInstallPrompt = e;
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        function installPWAApp() {
+            if (deferredPWAInstallPrompt) {
+                deferredPWAInstallPrompt.prompt();
+                deferredPWAInstallPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        showToast("Installing TNSTC Bus App on your Phone...", "success");
+                    }
+                    deferredPWAInstallPrompt = null;
+                });
+            } else {
+                showToast("To install App: Tap Chrome Menu (⋮) ➔ Add to Home Screen / Install App", "info");
             }
         }
     </script>
