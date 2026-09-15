@@ -168,6 +168,10 @@
                     const localTickets = JSON.parse(localStorage.getItem('my_tnstc_tickets') || '[]');
                     localTickets.unshift(data.ticket);
                     localStorage.setItem('my_tnstc_tickets', JSON.stringify(localTickets));
+
+                    // Refresh admin stats if admin is viewing
+                    if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
+                    if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
                 } else {
                     showToast(data.error || "Booking failed.", "error");
                 }
@@ -1695,7 +1699,10 @@
                                         <h3 style="font-size: 1.05rem; margin:0;"><i class="fas fa-receipt" style="color:#ec4899;"></i> Live Recent Ticket Bookings / சமீபத்திய டிக்கெட் பதிவுகள்</h3>
                                         <span style="font-size:0.8rem; color:var(--text-muted);">Real-time tickets booked by passengers</span>
                                     </div>
-                                    <button class="btn btn-small" onclick="switchAdminTab('reports')" style="background:#8b5cf6; color:white;"><i class="fas fa-file-invoice-dollar"></i> View Detailed Sales Report</button>
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="btn btn-small" onclick="loadAdminDashboard()" style="background:#0284c7; color:white;"><i class="fas fa-sync-alt"></i> Refresh Live Data</button>
+                                        <button class="btn btn-small" onclick="switchAdminTab('reports')" style="background:#8b5cf6; color:white;"><i class="fas fa-file-invoice-dollar"></i> View Detailed Sales Report</button>
+                                    </div>
                                 </div>
                                 <div class="table-responsive">
                                     <table class="data-table">
