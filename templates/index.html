@@ -408,16 +408,16 @@
             z-index: 1900;
         }
 
-        /* Navbar */
+        /* Refined Responsive Navbar & Dropdown Styles */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: linear-gradient(135deg, rgba(46, 139, 87, 0.95), rgba(34, 139, 34, 0.95));
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            padding: 12px 35px;
+            background: linear-gradient(135deg, rgba(27, 67, 50, 0.96), rgba(46, 139, 87, 0.96));
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+            padding: 10px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -425,7 +425,7 @@
         }
 
         .nav-brand {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #ffffff;
             display: flex;
@@ -436,41 +436,90 @@
 
         .nav-links {
             display: flex;
-            gap: 18px;
+            gap: 12px;
             align-items: center;
         }
 
-        .nav-links a {
+        .nav-links a, .nav-dropdown-toggle {
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            font-size: 1rem;
-            transition: all 0.3s;
-            padding: 6px 12px;
-            border-radius: 8px;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-nav {
-            background: #ffffff;
-            color: var(--primary) !important;
-            padding: 7px 18px;
-            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.92);
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: none;
+            font-size: 0.92rem;
+            transition: all 0.25s ease;
+            padding: 7px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             cursor: pointer;
         }
 
+        .nav-links a:hover, .nav-dropdown-toggle:hover, .nav-links a.active, .nav-dropdown-toggle.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-nav {
+            background: #ffffff !important;
+            color: var(--primary) !important;
+            padding: 7px 18px !important;
+            border-radius: 20px !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .btn-nav:hover {
-            background: var(--background);
-            color: var(--primary-hover) !important;
-            transform: translateY(-2px);
+            background: #f8f9fa !important;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 210px;
+            background: #ffffff;
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+            z-index: 2500;
+            margin-top: 8px;
+            overflow: hidden;
+            padding: 6px 0;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .nav-dropdown-menu a {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px !important;
+            color: #2b2d42 !important;
+            font-weight: 600;
+            font-size: 0.88rem;
+            border-radius: 0 !important;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background: rgba(46, 139, 87, 0.1) !important;
+            color: var(--primary) !important;
         }
 
         /* Container & Cards */
@@ -699,24 +748,31 @@
             }
         }
 
-        @media(max-width: 768px) {
-            .navbar .container {
+        @media(max-width: 900px) {
+            .navbar {
                 flex-direction: column;
                 gap: 10px;
                 padding: 10px 15px;
             }
-            .logo {
-                font-size: 1.2rem;
+            .nav-brand {
+                font-size: 1.05rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             .nav-links {
                 width: 100%;
                 justify-content: center;
                 flex-wrap: wrap;
-                gap: 6px;
+                gap: 8px;
             }
-            .nav-links a {
-                padding: 8px 10px;
+            .nav-links a, .nav-dropdown-toggle {
+                padding: 6px 10px;
                 font-size: 0.82rem;
+            }
+            .nav-dropdown-menu {
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
             }
             .metrics-grid {
                 grid-template-columns: 1fr 1fr;
@@ -1109,27 +1165,49 @@
 
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-brand" style="display:flex; align-items:center; gap:10px;">
+        <div class="nav-brand">
             <span><i class="fas fa-bus-alt"></i> TNSTC Tirunelveli - Kanyakumari</span>
             <span id="user-role-badge" class="badge" style="font-size:0.75rem; background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4);"><i class="fas fa-user"></i> Guest Mode</span>
         </div>
         <div class="nav-links">
-            <div class="lang-switch" style="display:inline-block; margin-right: 10px;">
+            <div class="lang-switch" style="display:inline-block; margin-right: 5px;">
                 <i class="fas fa-language" style="color:#ffd166;"></i>
                 <a href="javascript:void(0)" onclick="changeLanguage('ta')" style="color:#ffd166; font-weight:700; padding:2px 5px;">தமிழ்</a>
                 <span style="color:white;">/</span>
                 <a href="javascript:void(0)" onclick="changeLanguage('en')" style="color:#ffd166; font-weight:700; padding:2px 5px;">English</a>
             </div>
-            <a href="javascript:void(0)" id="nav-home" onclick="navigate('home')" class="active">Home</a>
+            <a href="javascript:void(0)" id="nav-home" onclick="navigate('home')" class="active"><i class="fas fa-house"></i> <span id="lbl-nav-home">Home</span></a>
 
-            <a href="javascript:void(0)" id="nav-busstand" onclick="navigate('busstand')"><i class="fas fa-tv" style="color:#06d6a0;"></i> <span>Bus Stand Board</span></a>
-            <a href="javascript:void(0)" id="nav-passes" onclick="navigate('passes')"><i class="fas fa-id-card" style="color:#e0aaff;"></i> <span>Travel Pass</span></a>
-            <a href="javascript:void(0)" id="nav-feedback" onclick="navigate('feedback')"><i class="fas fa-comment-dots"></i> <span id="lbl-nav-feedback">Feedback</span></a>
-            <a href="javascript:void(0)" id="pwa-install-btn" onclick="installPWAApp()" class="btn-nav" style="background:#0284c7; color:white !important; font-weight:700;"><i class="fas fa-mobile-screen-button"></i> Install App</a>
-            <a href="javascript:void(0)" id="nav-login" onclick="navigate('login')" class="btn-nav">Login</a>
-            <a href="javascript:void(0)" id="nav-signup" onclick="navigate('login'); switchLoginRoleTab('signup');" class="btn-nav" style="background:var(--primary); color:white !important; font-weight:700;"><i class="fas fa-user-plus"></i> Sign Up</a>
+            <!-- Services Dropdown (Bus Stand Board, Travel Pass, Feedback) -->
+            <div class="nav-dropdown" id="nav-services-dropdown">
+                <a href="javascript:void(0)" class="nav-dropdown-toggle" id="nav-services-btn" onclick="toggleServicesDropdown(event)">
+                    <i class="fas fa-layer-group" style="color:#06d6a0;"></i>
+                    <span id="lbl-nav-services">Services ▾</span>
+                </a>
+                <div class="nav-dropdown-menu" id="services-dropdown-menu">
+                    <a href="javascript:void(0)" id="nav-busstand" onclick="navigate('busstand'); closeServicesDropdown();">
+                        <i class="fas fa-tv" style="color:#06d6a0;"></i>
+                        <span id="lbl-nav-busstand">Bus Stand Board</span>
+                    </a>
+                    <a href="javascript:void(0)" id="nav-passes" onclick="navigate('passes'); closeServicesDropdown();">
+                        <i class="fas fa-id-card" style="color:#9d4edd;"></i>
+                        <span id="lbl-nav-passes">Travel Pass</span>
+                    </a>
+                    <a href="javascript:void(0)" id="nav-feedback" onclick="navigate('feedback'); closeServicesDropdown();">
+                        <i class="fas fa-comment-dots" style="color:#ef476f;"></i>
+                        <span id="lbl-nav-feedback">Feedback</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Install PWA App (Auto-hidden if installed or in PWA standalone mode) -->
+            <a href="javascript:void(0)" id="pwa-install-btn" onclick="installPWAApp()" class="btn-nav" style="display:none; background:#0284c7 !important; color:white !important; font-weight:700;"><i class="fas fa-mobile-screen-button"></i> <span id="lbl-pwa-install">Install App</span></a>
+            
+            <!-- Combined Login / Sign Up Button -->
+            <a href="javascript:void(0)" id="nav-login" onclick="navigate('login'); switchLoginRoleTab('passenger');" class="btn-nav"><i class="fas fa-right-to-bracket"></i> <span id="lbl-nav-login">Login / Sign Up</span></a>
+            
             <a href="javascript:void(0)" id="nav-admin" onclick="navigate('admin')" style="display:none; color:white; font-weight:600;"><i class="fas fa-user-shield"></i> Admin Panel</a>
-            <a href="javascript:void(0)" id="nav-logout" onclick="logout()" class="btn-nav" style="display:none; background:#ef476f; color:white !important;">Logout</a>
+            <a href="javascript:void(0)" id="nav-logout" onclick="logout()" class="btn-nav" style="display:none; background:#ef476f !important; color:white !important;">Logout</a>
         </div>
     </nav>
 
@@ -2500,7 +2578,29 @@
         // -------------------------
         // Language Switcher
         // -------------------------
-                const translations = {
+                // Services Dropdown Helpers
+        function toggleServicesDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('services-dropdown-menu');
+            if (menu) {
+                const isOpen = menu.style.display === 'block';
+                menu.style.display = isOpen ? 'none' : 'block';
+            }
+        }
+
+        function closeServicesDropdown() {
+            const menu = document.getElementById('services-dropdown-menu');
+            if (menu) menu.style.display = 'none';
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('nav-services-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                closeServicesDropdown();
+            }
+        });
+
+        const translations = {
             'en': {
                 'title': '<i class="fas fa-bus-alt"></i> Tamil Nadu State Transport Corporation (TNSTC)',
                 'subtitle': 'Tirunelveli Region — Kanyakumari District Division',
@@ -2508,9 +2608,11 @@
                 'searchBtn': 'Search Bus',
                 'searchResults': 'Search Results',
                 'navHome': 'Home',
-                'navTickets': 'My Tickets',
-                'navPass': 'Bus Pass',
+                'navServices': 'Services ▾',
+                'navBusstand': 'Bus Stand Board',
+                'navPasses': 'Travel Pass',
                 'navFeedback': 'Feedback',
+                'navLogin': 'Login / Sign Up',
                 'nearMe': 'Find Stops Near Me (GPS)'
             },
             'ta': {
@@ -2520,9 +2622,11 @@
                 'searchBtn': 'தேடுங்கள்',
                 'searchResults': 'தேடல் முடிவுகள்',
                 'navHome': 'முகப்பு',
-                'navTickets': 'என் சீட்டுகள்',
-                'navPass': 'பேருந்து பாஸ்',
+                'navServices': 'சேவைகள் ▾',
+                'navBusstand': 'பேருந்து நிலைய பலகை',
+                'navPasses': 'பயணச் சீட்டு சான்றிதழ்',
                 'navFeedback': 'கருத்துகள்',
+                'navLogin': 'லாகின் / பதிவு',
                 'nearMe': 'அருகிலுள்ள நிறுத்தங்கள் (GPS)'
             }
         };
@@ -2533,9 +2637,12 @@
             if (document.getElementById('search-title')) document.getElementById('search-title').innerHTML = translations[lang]['searchTitle'];
             if (document.getElementById('btn-search-text')) document.getElementById('btn-search-text').innerText = translations[lang]['searchBtn'];
             if (document.getElementById('search-results-title')) document.getElementById('search-results-title').innerText = translations[lang]['searchResults'];
-            if (document.getElementById('lbl-nav-tickets')) document.getElementById('lbl-nav-tickets').innerText = translations[lang]['navTickets'];
-            if (document.getElementById('lbl-nav-pass')) document.getElementById('lbl-nav-pass').innerText = translations[lang]['navPass'];
+            if (document.getElementById('lbl-nav-home')) document.getElementById('lbl-nav-home').innerText = translations[lang]['navHome'];
+            if (document.getElementById('lbl-nav-services')) document.getElementById('lbl-nav-services').innerText = translations[lang]['navServices'];
+            if (document.getElementById('lbl-nav-busstand')) document.getElementById('lbl-nav-busstand').innerText = translations[lang]['navBusstand'];
+            if (document.getElementById('lbl-nav-passes')) document.getElementById('lbl-nav-passes').innerText = translations[lang]['navPasses'];
             if (document.getElementById('lbl-nav-feedback')) document.getElementById('lbl-nav-feedback').innerText = translations[lang]['navFeedback'];
+            if (document.getElementById('lbl-nav-login')) document.getElementById('lbl-nav-login').innerText = translations[lang]['navLogin'];
             if (document.getElementById('lbl-near-me')) document.getElementById('lbl-near-me').innerText = translations[lang]['nearMe'];
             localStorage.setItem('preferredLang', lang);
         }
@@ -2572,12 +2679,24 @@
             }
         }
 
+        function checkPWAStandaloneState() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+                || window.navigator.standalone === true 
+                || localStorage.getItem('pwa_installed') === 'true';
+            
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn && isStandalone) {
+                btn.style.setProperty('display', 'none', 'important');
+            }
+        }
+
         function updateNavbarForRole() {
             const roleBadge = document.getElementById('user-role-badge');
             const navLogin = document.getElementById('nav-login');
             const navSignup = document.getElementById('nav-signup');
             const navLogout = document.getElementById('nav-logout');
             const navAdmin = document.getElementById('nav-admin');
+            const navServices = document.getElementById('nav-services-dropdown');
             const navPasses = document.getElementById('nav-passes');
             const navFeedback = document.getElementById('nav-feedback');
 
@@ -2587,26 +2706,30 @@
                 if (navSignup) navSignup.style.display = 'none';
                 if (navPasses) navPasses.style.display = 'none';
                 if (navFeedback) navFeedback.style.display = 'none';
-                if (navLogout) navLogout.style.display = 'inline-block';
-                if (navAdmin) navAdmin.style.display = 'inline-block';
+                if (navLogout) navLogout.style.display = 'inline-flex';
+                if (navAdmin) navAdmin.style.display = 'inline-flex';
+                if (navServices) navServices.style.display = 'inline-block';
             } else if (userRole === 'passenger') {
                 const psgId = userData.passenger_id || ('PSG-' + (1000 + (userData.user_id || 1)));
                 if (roleBadge) roleBadge.innerHTML = `<i class="fas fa-id-badge"></i> Passenger: ${userData.name || userData.phone} <span style="background:rgba(255,255,255,0.25); padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.8rem; margin-left:6px;"><i class="fas fa-fingerprint"></i> ${psgId}</span>`;
                 if (navLogin) navLogin.style.display = 'none';
                 if (navSignup) navSignup.style.display = 'none';
-                if (navPasses) navPasses.style.display = 'inline-block';
-                if (navFeedback) navFeedback.style.display = 'inline-block';
-                if (navLogout) navLogout.style.display = 'inline-block';
+                if (navPasses) navPasses.style.display = 'flex';
+                if (navFeedback) navFeedback.style.display = 'flex';
+                if (navLogout) navLogout.style.display = 'inline-flex';
                 if (navAdmin) navAdmin.style.display = 'none';
+                if (navServices) navServices.style.display = 'inline-block';
             } else {
                 if (roleBadge) roleBadge.innerHTML = '<i class="fas fa-user"></i> Guest Mode';
-                if (navLogin) navLogin.style.display = 'inline-block';
-                if (navSignup) navSignup.style.display = 'inline-block';
-                if (navPasses) navPasses.style.display = 'inline-block';
-                if (navFeedback) navFeedback.style.display = 'inline-block';
+                if (navLogin) navLogin.style.display = 'inline-flex';
+                if (navSignup) navSignup.style.display = 'none';
+                if (navPasses) navPasses.style.display = 'flex';
+                if (navFeedback) navFeedback.style.display = 'flex';
                 if (navLogout) navLogout.style.display = 'none';
                 if (navAdmin) navAdmin.style.display = 'none';
+                if (navServices) navServices.style.display = 'inline-block';
             }
+            checkPWAStandaloneState();
         }
 
         function navigate(viewName) {
@@ -2625,7 +2748,7 @@
             }
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-links a, .nav-dropdown-toggle').forEach(el => el.classList.remove('active'));
 
             const mapWrapper = document.getElementById('map-wrapper');
             if (mapWrapper && mapWrapper.style.display !== 'none' && viewName !== 'home') {
@@ -2638,13 +2761,16 @@
             } else if (viewName === 'busstand') {
                 document.getElementById('view-busstand').classList.add('active');
                 if (document.getElementById('nav-busstand')) document.getElementById('nav-busstand').classList.add('active');
+                if (document.getElementById('nav-services-btn')) document.getElementById('nav-services-btn').classList.add('active');
                 loadBusStandLED();
             } else if (viewName === 'passes') {
                 document.getElementById('view-passes').classList.add('active');
                 if (document.getElementById('nav-passes')) document.getElementById('nav-passes').classList.add('active');
+                if (document.getElementById('nav-services-btn')) document.getElementById('nav-services-btn').classList.add('active');
             } else if (viewName === 'feedback') {
                 document.getElementById('view-feedback').classList.add('active');
                 if (document.getElementById('nav-feedback')) document.getElementById('nav-feedback').classList.add('active');
+                if (document.getElementById('nav-services-btn')) document.getElementById('nav-services-btn').classList.add('active');
             } else if (viewName === 'login') {
                 if (userRole !== 'guest') {
                     if (userRole === 'admin') navigate('admin');
@@ -4913,8 +5039,20 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPWAInstallPrompt = e;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+                || window.navigator.standalone === true 
+                || localStorage.getItem('pwa_installed') === 'true';
             const btn = document.getElementById('pwa-install-btn');
-            if (btn) btn.style.display = 'inline-flex';
+            if (btn && !isStandalone) {
+                btn.style.display = 'inline-flex';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            localStorage.setItem('pwa_installed', 'true');
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.style.setProperty('display', 'none', 'important');
+            showToast("TNSTC App successfully installed!", "success");
         });
 
         function installPWAApp() {
