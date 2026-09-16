@@ -1140,6 +1140,85 @@ def search_bus():
         return jsonify({"error": str(e)}), 500
 
 
+
+@app.route("/search_by_route_no")
+def search_by_route_no():
+    try:
+        route_no = request.args.get("route_no", "").strip().upper()
+        if not route_no:
+            return jsonify({"error": "Route Number is required"}), 400
+
+        sql = """
+            SELECT DISTINCT bus.bus_id, bus.bus_number, bus.bus_type, bus.depot_name, bus.driver_name,
+                   bus.capacity, bus.occupancy, bus.status, bus.ticket_fare,
+                   route.route_id, route.origin as route_origin, route.destination as route_dest
+            FROM route 
+            LEFT JOIN bus ON UPPER(CAST(bus.route_id AS TEXT)) = UPPER(CAST(route.route_id AS TEXT))
+            WHERE UPPER(CAST(route.route_id AS TEXT)) = %s 
+               OR UPPER(CAST(route.route_id AS TEXT)) LIKE %s
+               OR UPPER(CAST(bus.bus_number AS TEXT)) LIKE %s
+            ORDER BY route.route_id ASC
+        """
+        like_pattern = f"%{route_no}%"
+        rows = execute_query(sql, params=(route_no, like_pattern, like_pattern), fetchall=True) or []
+
+        result = []
+        for r in rows:
+            orig_eng = r.get("route_origin", "")
+            dest_eng = r.get("route_dest", "")
+            orig_ta = get_tamil_place_name(orig_eng)
+            dest_ta = get_tamil_place_name(dest_eng)
+
+            item = dict(r)
+            item["origin"] = orig_eng
+            item["destination"] = dest_eng
+            item["origin_ta"] = orig_ta
+            item["destination_ta"] = dest_ta
+
+            # Fetch schedule timings
+            try:
+                con, cur, db_type = get_db()
+                sql_q = "SELECT departure_time, arrival_time FROM bus_schedule WHERE route_id = %s"
+                cur.execute(sql_q, (item["route_id"],))
+                schedule_rows = cur.fetchall()
+                if schedule_rows:
+                    item["departure_time"] = schedule_rows[0]["departure_time"]
+                    item["arrival_time"] = schedule_rows[0]["arrival_time"]
+                    item["all_schedules"] = [f"{s['departure_time']} - {s['arrival_time']}" for s in schedule_rows]
+                else:
+                    item["departure_time"] = "08:00 AM"
+                    item["arrival_time"] = "10:00 AM"
+                    item["all_schedules"] = ["08:00 AM - 10:00 AM"]
+            except Exception:
+                item["departure_time"] = "08:00 AM"
+                item["arrival_time"] = "10:00 AM"
+                item["all_schedules"] = ["08:00 AM - 10:00 AM"]
+
+            # Also fetch all stops along this route
+            try:
+                sql_stops = "SELECT stop_name FROM bus_stop WHERE route_id = %s ORDER BY stop_order ASC"
+                stop_rows = execute_query(sql_stops, params=(item["route_id"],), fetchall=True)
+                if stop_rows:
+                    item["route_stops"] = [s["stop_name"] for s in stop_rows]
+            except Exception:
+                pass
+
+            result.append(item)
+
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/get-all-route-numbers")
+def get_all_route_numbers():
+    try:
+        rows = execute_query("SELECT DISTINCT route_id, origin, destination FROM route ORDER BY route_id ASC", fetchall=True) or []
+        return jsonify(rows)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/get-destinations")
 def get_destinations():
     try:

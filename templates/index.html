@@ -1237,30 +1237,55 @@
 
             <div style="max-width: 550px; margin: 0 auto;">
                 <div class="card">
-                    <h2 id="search-title"><i class="fas fa-magnifying-glass-location"></i> Search Bus</h2>
-                    <div class="form-group">
-                        <i class="fas fa-map-pin input-icon-left"></i>
-                        <input type="text" id="search-origin" class="with-icon" placeholder="Origin / புறப்படும் இடம் (e.g. மார்த்தாண்டம் / MARTHANDAM)" list="origin-options" oninput="fetchOrigins()">
-                        <datalist id="origin-options"></datalist>
-                    </div>
-                    
-                    <div class="swap-container">
-                        <button class="swap-modern-btn" onclick="swapOriginDest()" title="Swap Origin & Destination"><i class="fas fa-exchange-alt"></i></button>
-                    </div>
+                    <h2 id="search-title"><i class="fas fa-magnifying-glass-location"></i> Search Bus / பேருந்தைத் தேடுங்கள்</h2>
 
-                    <div class="form-group" style="position:relative;">
-                        <i class="fas fa-location-dot input-icon-left" style="color: var(--danger);"></i>
-                        <input type="text" id="search-dest" class="with-icon" placeholder="Destination / சேரும் இடம் (e.g. புதுக்கடை / PUTHUKADAI)" list="dest-options" onfocus="fetchDestinations()" oninput="fetchDestinations()" style="padding-right: 45px;">
-                        <datalist id="dest-options"></datalist>
-                        <i class="fas fa-microphone" id="mic-btn" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 1.2rem; z-index: 5;" onclick="startVoiceRecognition()" title="Voice Search"></i>
+                    <!-- Search Mode Switcher Tabs -->
+                    <div style="display:flex; background:#f1f5f9; border-radius:14px; padding:4px; margin-bottom:18px; border:1px solid #cbd5e1;">
+                        <button type="button" id="tab-btn-search-stop" onclick="switchSearchTab('stop')" style="flex:1; padding:10px; border-radius:10px; border:none; font-weight:700; font-size:0.85rem; cursor:pointer; background:var(--primary); color:white; transition:all 0.25s;">
+                            <i class="fas fa-route"></i> By Stop / புறப்படும் இடம்
+                        </button>
+                        <button type="button" id="tab-btn-search-routeno" onclick="switchSearchTab('routeno')" style="flex:1; padding:10px; border-radius:10px; border:none; font-weight:700; font-size:0.85rem; cursor:pointer; background:transparent; color:var(--text-muted); transition:all 0.25s;">
+                            <i class="fas fa-bus-simple"></i> By Route No (தடம் எண்)
+                        </button>
                     </div>
 
+                    <!-- Mode 1: Search by Stop (Origin & Destination) -->
+                    <div id="search-box-stop">
+                        <div class="form-group">
+                            <i class="fas fa-map-pin input-icon-left"></i>
+                            <input type="text" id="search-origin" class="with-icon" placeholder="Origin / புறப்படும் இடம் (e.g. மார்த்தாண்டம் / MARTHANDAM)" list="origin-options" oninput="fetchOrigins()">
+                            <datalist id="origin-options"></datalist>
+                        </div>
+                        
+                        <div class="swap-container">
+                            <button class="swap-modern-btn" onclick="swapOriginDest()" title="Swap Origin & Destination"><i class="fas fa-exchange-alt"></i></button>
+                        </div>
 
-                    <button class="btn btn-full" id="btn-search" onclick="searchBus()"><i class="fas fa-search"></i> <span id="btn-search-text">Search Bus</span></button>
+                        <div class="form-group" style="position:relative;">
+                            <i class="fas fa-location-dot input-icon-left" style="color: var(--danger);"></i>
+                            <input type="text" id="search-dest" class="with-icon" placeholder="Destination / சேரும் இடம் (e.g. புதுக்கடை / PUTHUKADAI)" list="dest-options" onfocus="fetchDestinations()" oninput="fetchDestinations()" style="padding-right: 45px;">
+                            <datalist id="dest-options"></datalist>
+                            <i class="fas fa-microphone" id="mic-btn" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 1.2rem; z-index: 5;" onclick="startVoiceRecognition()" title="Voice Search"></i>
+                        </div>
+
+                        <button class="btn btn-full" id="btn-search" onclick="searchBus()"><i class="fas fa-search"></i> <span id="btn-search-text">Search Bus</span></button>
+                    </div>
+
+                    <!-- Mode 2: Search by Route Number -->
+                    <div id="search-box-routeno" style="display:none;">
+                        <div class="form-group" style="position:relative;">
+                            <i class="fas fa-bus-simple input-icon-left" style="color: var(--secondary);"></i>
+                            <input type="text" id="search-route-number" class="with-icon" placeholder="Enter Route No. (e.g. 81A, 82M, 309, 382, 451)" list="route-number-options" onfocus="fetchRouteNumberSuggestions()" oninput="fetchRouteNumberSuggestions()" style="text-transform:uppercase; padding-right: 45px;">
+                            <datalist id="route-number-options"></datalist>
+                            <i class="fas fa-microphone" id="mic-btn-route" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--secondary); font-size: 1.2rem; z-index: 5;" onclick="startVoiceRouteRecognition()" title="Voice Search Route Number"></i>
+                        </div>
+
+                        <button class="btn btn-full" id="btn-search-route" onclick="searchByRouteNo()" style="background:var(--secondary); color:white;"><i class="fas fa-search"></i> <span id="btn-search-route-text">Find Bus by Route No. (தடம் எண் தேடுக)</span></button>
+                    </div>
 
                     <h3 style="margin-top: 25px; font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 8px;" id="search-results-title">Search Results</h3>
-                    <div id="search-results-list" style="margin-top: 15px; max-height: 280px; overflow-y: auto;">
-                        <div style="padding: 15px; text-align: center; color: var(--text-muted);">Enter origin and destination to search available buses.</div>
+                    <div id="search-results-list" style="margin-top: 15px; max-height: 350px; overflow-y: auto;">
+                        <div style="padding: 15px; text-align: center; color: var(--text-muted);">Enter origin and destination or Route No. to search available buses.</div>
                     </div>
                 </div>
             </div>
