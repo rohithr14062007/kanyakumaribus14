@@ -178,8 +178,10 @@
                     localStorage.setItem('my_tnstc_tickets', JSON.stringify(localTickets));
 
                     // Refresh admin stats if admin is viewing
-                    if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
-                    if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
+                    if (userRole === 'admin') {
+                        if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
+                        if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
+                    }
                 } else {
                     showToast(data.error || "Booking failed.", "error");
                 }
@@ -2578,8 +2580,10 @@
             }
             const res = await fetch(url, options);
             if (res.status === 401) {
-                showToast("Admin session expired. Please login again.", "error");
-                logout();
+                if (userRole === 'admin') {
+                    showToast("Admin session expired. Please login again.", "error");
+                    logout();
+                }
                 throw new Error("Unauthorized");
             }
             return res;
@@ -4700,9 +4704,13 @@
 
                 showToast(`Payment of ₹${totalFare} Received for ${passengers} ${passengers === 1 ? 'Passenger' : 'Passengers'}! Official e-Ticket Issued.`, "success");
                 
-                // Refresh admin stats & sales report live!
-                if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
-                if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
+                // Refresh admin stats & sales report live if admin!
+                if (userRole === 'admin') {
+                    if (userRole === 'admin') {
+                        if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
+                        if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
+                    }
+                }
 
             } catch (e) {
                 console.error("Payment error:", e);
