@@ -4625,14 +4625,38 @@
             document.getElementById('ticket-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiPayload)}`;
         }
 
-        function processTicketPayment() {
+        async function processTicketPayment() {
             if (!activeTicketData) return;
 
             const btn = document.getElementById('btn-pay-ticket');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying UPI Payment...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying UPI Payment & Persisting Ticket...';
 
-            setTimeout(() => {
+            try {
+                // Call backend API to persist ticket booking to database
+                const busId = parseInt(activeTicketData.busId) || 1;
+                const passengers = activeTicketData.passengers || 1;
+                
+                const res = await fetch('/api/tickets/book', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        bus_id: busId,
+                        from_stop: activeTicketData.origin,
+                        to_stop: activeTicketData.dest,
+                        seats: passengers,
+                        passenger_name: 'Commuter',
+                        passenger_phone: '',
+                        promo_code: ''
+                    })
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.ticket) {
+                    activeTicketData.pnr = data.ticket.ticket_id;
+                    document.getElementById('ticket-pnr-display').textContent = data.ticket.ticket_id;
+                }
+
                 const txnId = `TXN-TNSTC-${Math.floor(10000000 + Math.random() * 90000000)}`;
                 activeTicketData.txnId = txnId;
                 activeTicketData.isPaid = true;
@@ -4647,8 +4671,6 @@
                 document.getElementById('ticket-paid-box').style.display = 'block';
                 document.getElementById('ticket-qr-label').innerHTML = '<i class="fas fa-check-double" style="color:var(--success);"></i> Verified Official e-Ticket QR Code';
 
-                // Confirmed Paid Ticket payload encoded in QR code
-                const passengers = activeTicketData.passengers || 1;
                 const singleFare = activeTicketData.singleFare || 10;
                 const totalFare = activeTicketData.totalFare || singleFare;
 
@@ -4657,9 +4679,18 @@
                 document.getElementById('ticket-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(verifiedQrPayload)}`;
 
                 showToast(`Payment of ₹${totalFare} Received for ${passengers} ${passengers === 1 ? 'Passenger' : 'Passengers'}! Official e-Ticket Issued.`, "success");
+                
+                // Refresh admin stats & sales report live!
+                if (typeof loadAdminDashboard === 'function') loadAdminDashboard();
+                if (typeof loadAdminSalesReport === 'function') loadAdminSalesReport();
+
+            } catch (e) {
+                console.error("Payment error:", e);
+                showToast("Error processing ticket payment.", "error");
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-qrcode"></i> Pay & Issue Ticket';
-            }, 750);
+            }
         }
 
         function issueNextTicket() {
