@@ -2679,8 +2679,8 @@ def admin_sales_report():
         total_tickets = list(t_row.values())[0] if t_row else 0
         r_row = execute_query("SELECT COALESCE(SUM(fare_paid), 0.0) as sum FROM ticket", fetchone=True) or {}
         total_revenue = list(r_row.values())[0] if r_row else 0.0
-        recent_tickets = execute_query("SELECT * FROM ticket ORDER BY created_at DESC LIMIT 20", fetchall=True) or []
-        route_breakdown = execute_query("SELECT route_id, COUNT(*) as count, SUM(fare_paid) as total_fare FROM ticket GROUP BY route_id ORDER BY total_fare DESC LIMIT 10", fetchall=True) or []
+        recent_tickets = execute_query("SELECT * FROM ticket ORDER BY created_at DESC", fetchall=True) or []
+        route_breakdown = execute_query("SELECT route_id, COUNT(*) as count, SUM(fare_paid) as total_fare FROM ticket GROUP BY route_id ORDER BY total_fare DESC", fetchall=True) or []
 
         return jsonify({
             "total_tickets_issued": total_tickets,

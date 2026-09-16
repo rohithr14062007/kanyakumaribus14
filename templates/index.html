@@ -5007,17 +5007,21 @@
                 recentTbody.innerHTML = filtered.map(t => {
                     const dateStr = t.created_at ? new Date(t.created_at).toLocaleString() : 'N/A';
                     const isPass = t.promo_code === 'BUS_PASS' || (t.status || '').includes('Pass');
+                    const fareVal = parseFloat(t.fare_paid) || 0.0;
                     return `
                         <tr>
                             <td><strong style="font-size:0.82rem; color:var(--primary); font-family:monospace;">${t.ticket_id}</strong></td>
                             <td style="font-size:0.8rem; color:var(--text-muted);">${dateStr}</td>
-                            <td><strong style="color:var(--text-main);">${t.route_id}</strong></td>
+                            <td><strong style="color:var(--text-main);">${t.route_id || 'N/A'}</strong></td>
                             <td>
                                 <div><strong>${t.passenger_name || 'Commuter'}</strong></div>
                                 <div style="font-size:0.78rem; color:var(--text-muted);">${t.passenger_phone || 'No phone'}</div>
                             </td>
                             <td style="font-size:0.88rem;">${t.from_stop} <i class="fas fa-arrow-right" style="font-size:0.75rem; color:var(--primary);"></i> ${t.to_stop}</td>
                             <td><span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700;">${t.seats}</span></td>
+                            <td><strong style="color:var(--success); font-size:0.92rem;">₹${fareVal.toFixed(2)}</strong></td>
+                            <td><span class="badge" style="background:${isPass ? '#e0aaff' : '#e2e8f0'}; color:${isPass ? '#5a189a' : '#334155'}; font-weight:700;">${t.promo_code || 'Standard'}</span></td>
+                            <td><span class="badge badge-active" style="background:${isPass ? '#fef08a' : '#dcfce7'}; color:${isPass ? '#854d0e' : '#166534'};">${t.status || 'Valid'}</span></td>
                         </tr>
                     `;
                 }).join('');
